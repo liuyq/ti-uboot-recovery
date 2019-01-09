@@ -168,8 +168,10 @@ fi
 
 TTY=$(find /dev/ -xdev -name "ttyUSB*" -type c -print -quit)
 
-if [ "${UBOOT_DIR}" != "${PWD}" ]; then
+if [ -f "${UBOOT_DIR}/${UBOOT_IMAGE}" ]; then
 	cp "${UBOOT_DIR}/${UBOOT_IMAGE}" .
+else
+	error_fatal "${UBOOT_DIR}/${UBOOT_IMAGE} not found"
 fi
 ./serial-download "${TTY}" || error_fatal "recovery failure"
 report_pass "download_uboot_to_memory"
@@ -180,5 +182,5 @@ fastboot oem format || error_fatal "oem format failed"
 report_pass "format_emmc"
 fastboot flash xloader "${UBOOT_DIR}/${MLO_IMAGE}" || error_fatal "xloader flash failed"
 report_pass "flash_xloader"
-fastboot flash bootloader "${UBOOT_DIR}/${MLO_IMAGE}" || error_fatal "bootloader flash failed"
+fastboot flash bootloader "${UBOOT_DIR}/${UBOOT_IMAGE}" || error_fatal "bootloader flash failed"
 report_pass "flash_bootloader"
