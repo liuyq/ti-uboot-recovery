@@ -1,0 +1,26 @@
+metadata:
+    name: u-boot-recovery
+    format: "Lava-Test-Shell Test Definition 1.0"
+    description: "u-boot recovery for TI boards. u-boot is loaded
+                  from serial device."
+    maintainer:
+        - milosz.wasilewski@linaro.org
+    os:
+        - debian
+        - ubuntu
+    scope:
+        - functional
+    environment:
+        - lava-test-shell
+    devices:
+        - x15-bl
+
+params:
+    # u-boot image
+    UBOOT_IMAGE: "/lava-lxc/u-boot.img"
+    UBOOT_MLO: "/lava-lxc/MLO"
+
+run:
+    steps:
+        - ./u-boot-recovery.sh -u "${UBOOT_IMAGE}" -m "${UBOOT_MLO}" -d "/lava-lxc/"
+        - ../../utils/send-to-lava.sh ./output/result.txt

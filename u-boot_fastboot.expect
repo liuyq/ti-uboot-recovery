@@ -1,0 +1,27 @@
+#!/usr/bin/expect
+set tty [lindex $argv 0]
+send_user "interact with u-boot, ctrl-C to exit\n"
+spawn -open [open $tty w+]
+send "\r"
+sleep 0.1
+expect "=>"
+sleep 0.1
+send "env default -f -a\r"
+sleep 0.1
+expect "=>"
+sleep 0.1
+send "setenv partitions \$partitions_android\r"
+sleep 0.1
+expect "=>"
+sleep 0.1
+send "env save\r"
+sleep 0.1
+expect "=>"
+sleep 0.1
+send "fastboot 1\r"
+expect {
+  timeout {
+    puts "Fastboot Running..."
+    exit
+  }
+}

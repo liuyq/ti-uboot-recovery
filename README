@@ -1,0 +1,12 @@
+Scripts for sending u-boot to TI boards over serial connection.
+
+Settings for GPEVM X15 board (AM57xx):
+ - J3: 1-2 closed
+ - J4: 1-2 closed
+ - J6: 1-2 closed
+
+In addition to the above settings, in order to prevent board
+powering down, J5 has to be closed before powering board up.
+
+Serial cable has to be connected. When updating u-boot in eMMC
+micro USB cable also has to be connected.

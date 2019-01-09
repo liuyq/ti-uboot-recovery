@@ -1,0 +1,94 @@
+#!/bin/bash
+
+MY_DIR=$(dirname $0)
+
+abort() {
+    echo "$@"
+    exit 2
+}
+
+if [ -z "$1" ]; then
+    echo "usage: $0 TTY [dir]"
+    echo "where:"
+    echo "    TTY is serial device connected to the board (i.e. /dev/ttyUSB0"
+    echo "    dir is the directory where the u-boot files come from"
+    echo "      will look for dir/u-boot.img "
+    echo "      and either dir/u-boot-spl.bin or dir/spl/u-boot-spl.bin"
+    echo "      if dir is not specified the current directory is used"
+    echo "Additionally ROM_UART_BOOT env variable is used to decide which"
+    echo "method to use for sending u-boot-spl to the board. Available options:"
+    echo "    asic_id_raw - suitable for AM57xx (default)"
+    echo "    xmodem - suitable for AM335x"
+    exit 1
+fi
+
+DUT_TTY=$1
+
+if [ -z "$ROM_UART_BOOT" ]; then
+    ROM_UART_BOOT=asic_id_raw
+fi
+
+if [ -n "$2" ]; then
+    U_BOOT_DIR=$2
+else
+    U_BOOT_DIR=.
+fi
+
+FILE2=$U_BOOT_DIR/u-boot.img
+
+if [ ! -f $FILE2 ]; then
+    echo "Can't find $FILE2"
+    exit 1
+fi
+
+FILE1=$U_BOOT_DIR/u-boot-spl.bin
+
+if [ ! -f $FILE1 ]; then
+    FILE1=$U_BOOT_DIR/spl/u-boot-spl.bin
+    if [ ! -f $FILE1 ]; then
+        echo "Can't find $FILE1"
+        exit 1
+    fi
+fi
+
+# SPL download for AM335x
+spl_download_xmodem() {
+    stty -F $DUT_TTY 115200 cs8 -parenb -cstopb
+    sx $FILE1 <$DUT_TTY >$DUT_TTY || abort "SPL download failed"
+}
+
+# SPL download for AM57x
+spl_download_asic_id_raw() {
+    stty -F $DUT_TTY 115200 cs8 -parenb -cstopb
+    $MY_DIR/serial-boot.pl -p $DUT_TTY -d0 -t40 -s $FILE1  || abort "SPL download failed"
+}
+
+# download u-boot image to SPL
+uboot_download() {
+    sx -kb --ymodem $FILE2 <$DUT_TTY >$DUT_TTY || abort "U-boot download failed"
+}
+
+# stop U-boot autoboot using expect
+stop_auto_boot() {
+    { cat <<- EOF
+        send_user "waiting for U-boot autoboot prompt\n"
+        spawn -noecho -open [open $DUT_TTY w+]
+        expect "Hit any key"
+        send "   \r"
+        send_user "\nstopped auto boot\n"
+        sleep 1
+        send "\r"
+        sleep 0.1
+        expect "=>"
+EOF
+    } | expect -
+}
+
+if [ x"$ROM_UART_BOOT" == x"asic_id_raw" ]; then
+    spl_download_asic_id_raw
+else
+    spl_download_xmodem
+fi
+
+uboot_download
+stop_auto_boot
