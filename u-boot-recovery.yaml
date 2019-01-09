@@ -23,4 +23,4 @@ params:
 run:
     steps:
         - ./u-boot-recovery.sh -u "${UBOOT_IMAGE}" -m "${UBOOT_MLO}" -d "/lava-lxc/"
-        - ../../utils/send-to-lava.sh ./output/result.txt
+        - ./send-to-lava.sh ./output/result.txt
