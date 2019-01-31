@@ -127,6 +127,19 @@ create_out_dir() {
     [ -d "${OUTPUT}" ] || error_msg "Could not create output directory ${OUTPUT}"
 }
 
+install() {
+    dist_name
+    # shellcheck disable=SC2154
+    case "${dist}" in
+        debian|ubuntu)
+            install_deps lrzsz libdevice-serialport-perl expect fastboot
+            ;;
+        *)
+            warn_msg "No package installation support on ${dist}"
+            ;;
+    esac
+}
+
 OUTPUT="$(pwd)/output"
 RESULT_FILE="${OUTPUT}/result.txt"
 export RESULT_FILE
@@ -149,18 +162,7 @@ done
 ! check_root && error_msg "You need to be root to run this script."
 create_out_dir "${OUTPUT}"
 
-install() {
-    dist_name
-    # shellcheck disable=SC2154
-    case "${dist}" in
-        debian|ubuntu)
-            install_deps lrzsz libdevice-serialport-perl expect fastboot
-            ;;
-        *)
-            warn_msg "No package installation support on ${dist}"
-            ;;
-    esac
-}
+install
 
 if [ ! -d "${UBOOT_DIR}" ]; then
 	error_fatal "${UBOOT_DIR} doesn't exist"
