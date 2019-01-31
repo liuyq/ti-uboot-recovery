@@ -132,7 +132,7 @@ install() {
     # shellcheck disable=SC2154
     case "${dist}" in
         debian|ubuntu)
-            install_deps lrzsz libdevice-serialport-perl expect fastboot
+            install_deps "lrzsz libdevice-serialport-perl expect fastboot perl-modules"
             ;;
         *)
             warn_msg "No package installation support on ${dist}"
