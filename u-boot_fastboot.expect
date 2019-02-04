@@ -14,6 +14,9 @@ send "setenv partitions \$partitions_android\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
+send "setenv bootdelay 15\r"
+sleep 0.1
+expect "=>"
 send "env save\r"
 sleep 0.1
 expect "=>"
