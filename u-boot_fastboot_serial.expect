@@ -1,38 +1,39 @@
 #!/usr/bin/expect
 set tty [lindex $argv 0]
+set send_human {.1 .3 1 .05 2}
 send_user "interact with u-boot, ctrl-C to exit\n"
 spawn -open [open $tty w+]
-send "\r"
+send -h "\r"
 sleep 0.1
 expect "=>"
-send "mmc dev 1\r"
+send -h "mmc dev 1\r"
 sleep 0.1
 expect "mmc1(part 0) is current device"
 sleep 0.1
-send "mmc rescan\r"
+send -h "mmc rescan\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
-send "mmc erase 0 0x400000\r"
+send -h "mmc erase 0 0x400000\r"
 sleep 0.1
 expect "4194304 blocks erased: OK"
 sleep 0.1
-send "env default -f -a\r"
+send -h "env default -f -a\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
-send "setenv partitions \$partitions_android\r"
+send -h "setenv partitions \$partitions_android\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
-send "setenv bootdelay 15\r"
+send -h "setenv bootdelay 15\r"
 sleep 0.1
 expect "=>"
-send "env save\r"
+send -h "env save\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
-send "fastboot 1\r"
+send -h "fastboot 1\r"
 expect {
   timeout {
     puts "Fastboot Running..."
