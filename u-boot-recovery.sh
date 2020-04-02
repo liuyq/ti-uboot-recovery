@@ -132,7 +132,7 @@ install() {
     # shellcheck disable=SC2154
     case "${dist}" in
         debian|ubuntu)
-            install_deps "wget lrzsz libdevice-serialport-perl expect fastboot perl-modules"
+            install_deps "telnet wget lrzsz libdevice-serialport-perl expect fastboot perl-modules"
             ;;
         *)
             warn_msg "No package installation support on ${dist}"
@@ -178,7 +178,7 @@ MLO_IMAGE_NAME=MLO
 wget "${UBOOT_IMAGE}" -O "${UBOOT_IMAGE_NAME}" || error_fatal "${UBOOT_IMAGE} not found"
 wget "${MLO_IMAGE}" -O "${MLO_IMAGE_NAME}" || error_fatal "${MLO_IMAGE} not found"
 
-"${EXPECT_SCRIPT}" ${TTY}
+"${EXPECT_SCRIPT}" ${TTY} || error_fatal "start_fastboot failed"
 report_pass "start_fastboot"
 fastboot devices
 fastboot oem format || error_fatal "oem format failed"
