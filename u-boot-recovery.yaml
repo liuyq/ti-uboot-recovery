@@ -19,9 +19,8 @@ params:
     # u-boot image
     UBOOT_IMAGE: "/lava-lxc/u-boot.img"
     UBOOT_MLO: "/lava-lxc/MLO"
-    UBOOT_DIR: "/lava-lxc/"
 
 run:
     steps:
-        - ./u-boot-recovery.sh -u "${UBOOT_IMAGE}" -m "${UBOOT_MLO}" -d "${UBOOT_DIR}"
+        - ./u-boot-recovery.sh -u "${UBOOT_IMAGE}" -m "${UBOOT_MLO}"
         - ./send-to-lava.sh ./output/result.txt

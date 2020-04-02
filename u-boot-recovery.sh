@@ -132,7 +132,7 @@ install() {
     # shellcheck disable=SC2154
     case "${dist}" in
         debian|ubuntu)
-            install_deps "lrzsz libdevice-serialport-perl expect android-tools-fastboot perl-modules"
+            install_deps "lrzsz libdevice-serialport-perl expect fastboot perl-modules"
             ;;
         *)
             warn_msg "No package installation support on ${dist}"
@@ -146,15 +146,14 @@ export RESULT_FILE
 IMAGE="aarch64/ubuntu"
 
 usage() {
-    echo "$0 [-d <directory with u-boot binaries>] [-u <u-boot.img>] [-m <MLO>]" 1>&2
+    echo "$0 [-u <u-boot.img>] [-m <MLO>]" 1>&2
     exit 1
 }
 
-while getopts "u:m:d:h" o; do
+while getopts "u:m:h" o; do
     case "$o" in
         u) UBOOT_IMAGE="${OPTARG}" ;;
         m) MLO_IMAGE="${OPTARG}" ;;
-		d) UBOOT_DIR="${OPTARG}" ;;
         h|*) usage ;;
     esac
 done
@@ -164,10 +163,6 @@ create_out_dir "${OUTPUT}"
 
 install
 
-if [ ! -d "${UBOOT_DIR}" ]; then
-	error_fatal "${UBOOT_DIR} doesn't exist"
-fi
-
 if [ -n "${LAVA_CONNECTION_COMMAND}" ] then
 	TTY="${LAVA_CONNECTION_COMMAND}"
 else
@@ -176,17 +171,18 @@ fi
 
 echo "TTY=${TTY}"
 
-if [ -f "${UBOOT_DIR}/${UBOOT_IMAGE}" ]; then
-	cp "${UBOOT_DIR}/${UBOOT_IMAGE}" .
-else
-	error_fatal "${UBOOT_DIR}/${UBOOT_IMAGE} not found"
+if [ ! -f "${UBOOT_IMAGE}" ]; then
+	error_fatal "${UBOOT_IMAGE} not found"
+fi
+if [ ! -f "${MLO_IMAGE}" ]; then
+	error_fatal "${MLO_IMAGE} not found"
 fi
 ./u-boot_fastboot.expect "${TTY}"
 report_pass "start_fastboot"
 fastboot devices
 fastboot oem format || error_fatal "oem format failed"
 report_pass "format_emmc"
-fastboot flash xloader "${UBOOT_DIR}/${MLO_IMAGE}" || error_fatal "xloader flash failed"
+fastboot flash xloader "${MLO_IMAGE}" || error_fatal "xloader flash failed"
 report_pass "flash_xloader"
-fastboot flash bootloader "${UBOOT_DIR}/${UBOOT_IMAGE}" || error_fatal "bootloader flash failed"
+fastboot flash bootloader "${UBOOT_IMAGE}" || error_fatal "bootloader flash failed"
 report_pass "flash_bootloader"
