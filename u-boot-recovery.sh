@@ -168,15 +168,19 @@ if [ ! -d "${UBOOT_DIR}" ]; then
 	error_fatal "${UBOOT_DIR} doesn't exist"
 fi
 
-TTY=$(find /dev/ -xdev -name "ttyUSB*" -type c -print -quit)
+if [ -n "${LAVA_CONNECTION_COMMAND}" ] then
+	TTY="${LAVA_CONNECTION_COMMAND}"
+else
+	TTY=$(find /dev/ -xdev -name "ttyUSB*" -type c -print -quit)
+fi
+
+echo "TTY=${TTY}"
 
 if [ -f "${UBOOT_DIR}/${UBOOT_IMAGE}" ]; then
 	cp "${UBOOT_DIR}/${UBOOT_IMAGE}" .
 else
 	error_fatal "${UBOOT_DIR}/${UBOOT_IMAGE} not found"
 fi
-./serial-download "${TTY}" || error_fatal "recovery failure"
-report_pass "download_uboot_to_memory"
 ./u-boot_fastboot.expect "${TTY}"
 report_pass "start_fastboot"
 fastboot devices
