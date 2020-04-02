@@ -143,7 +143,6 @@ install() {
 OUTPUT="$(pwd)/output"
 RESULT_FILE="${OUTPUT}/result.txt"
 export RESULT_FILE
-IMAGE="aarch64/ubuntu"
 
 usage() {
     echo "$0 [-u <u-boot.img>] [-m <MLO>]" 1>&2
@@ -163,7 +162,8 @@ create_out_dir "${OUTPUT}"
 
 install
 
-if [ -n "${LAVA_CONNECTION_COMMAND}" ] then
+if [ -n "${LAVA_CONNECTION_COMMAND}" ]
+then
 	TTY="${LAVA_CONNECTION_COMMAND}"
 else
 	TTY=$(find /dev/ -xdev -name "ttyUSB*" -type c -print -quit)
