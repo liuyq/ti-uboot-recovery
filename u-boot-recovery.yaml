@@ -16,9 +16,10 @@ metadata:
         - x15-bl
 
 params:
-    # u-boot image
-    UBOOT_IMAGE: "/lava-lxc/u-boot.img"
-    UBOOT_MLO: "/lava-lxc/MLO"
+    # u-boot image URL
+    UBOOT_IMAGE: "https://your.server/u-boot.img"
+    # MLO image URL
+    UBOOT_MLO: "https://your.server/MLO"
 
 run:
     steps:

@@ -132,7 +132,7 @@ install() {
     # shellcheck disable=SC2154
     case "${dist}" in
         debian|ubuntu)
-            install_deps "lrzsz libdevice-serialport-perl expect fastboot perl-modules"
+            install_deps "wget lrzsz libdevice-serialport-perl expect fastboot perl-modules"
             ;;
         *)
             warn_msg "No package installation support on ${dist}"
@@ -171,18 +171,17 @@ fi
 
 echo "TTY=${TTY}"
 
-if [ ! -f "${UBOOT_IMAGE}" ]; then
-	error_fatal "${UBOOT_IMAGE} not found"
-fi
-if [ ! -f "${MLO_IMAGE}" ]; then
-	error_fatal "${MLO_IMAGE} not found"
-fi
+UBOOT_IMAGE_NAME=u-boot.img
+MLO_IMAGE_NAME=MLO
+wget "${UBOOT_IMAGE}" -O "${UBOOT_IMAGE_NAME}" || error_fatal "${UBOOT_IMAGE} not found"
+wget "${MLO_IMAGE}" -O "${MLO_IMAGE_NAME}" || error_fatal "${MLO_IMAGE} not found"
+
 ./u-boot_fastboot.expect "${TTY}"
 report_pass "start_fastboot"
 fastboot devices
 fastboot oem format || error_fatal "oem format failed"
 report_pass "format_emmc"
-fastboot flash xloader "${MLO_IMAGE}" || error_fatal "xloader flash failed"
+fastboot flash xloader "${MLO_IMAGE_NAME}" || error_fatal "xloader flash failed"
 report_pass "flash_xloader"
-fastboot flash bootloader "${UBOOT_IMAGE}" || error_fatal "bootloader flash failed"
+fastboot flash bootloader "${UBOOT_IMAGE_NAME}" || error_fatal "bootloader flash failed"
 report_pass "flash_bootloader"
