@@ -165,8 +165,10 @@ install
 if [ -n "${LAVA_CONNECTION_COMMAND}" ]
 then
 	TTY="${LAVA_CONNECTION_COMMAND}"
+	EXPECT_SCRIPT="./u-boot_fastboot_telnet.expect"
 else
 	TTY=$(find /dev/ -xdev -name "ttyUSB*" -type c -print -quit)
+	EXPECT_SCRIPT="./u-boot_fastboot_serial.expect"
 fi
 
 echo "TTY=${TTY}"
@@ -176,7 +178,7 @@ MLO_IMAGE_NAME=MLO
 wget "${UBOOT_IMAGE}" -O "${UBOOT_IMAGE_NAME}" || error_fatal "${UBOOT_IMAGE} not found"
 wget "${MLO_IMAGE}" -O "${MLO_IMAGE_NAME}" || error_fatal "${MLO_IMAGE} not found"
 
-./u-boot_fastboot.expect "${TTY}"
+"${EXPECT_SCRIPT}" "${TTY}"
 report_pass "start_fastboot"
 fastboot devices
 fastboot oem format || error_fatal "oem format failed"
