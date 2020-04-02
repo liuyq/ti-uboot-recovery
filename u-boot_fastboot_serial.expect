@@ -5,15 +5,15 @@ spawn -open [open $tty w+]
 send "\r"
 sleep 0.1
 expect "=>"
-send "mmc dev 1"
+send "mmc dev 1\r"
 sleep 0.1
 expect "mmc1(part 0) is current device"
 sleep 0.1
-send "mmc rescan"
+send "mmc rescan\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
-send "mmc erase 0 0x400000"
+send "mmc erase 0 0x400000\r"
 sleep 0.1
 expect "4194304 blocks erased: OK"
 sleep 0.1
