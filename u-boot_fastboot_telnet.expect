@@ -1,7 +1,9 @@
 #!/usr/bin/expect
-set tty [lindex $argv 0]
+set telnet [lindex $argv 0]
+set host [lindex $argv 1]
+set port [lindex $argv 2]
 send_user "interact with u-boot over telnet, ctrl-C to exit\n"
-spawn $tty
+spawn $telnet $host $port
 send "\r"
 sleep 0.1
 expect "=>"

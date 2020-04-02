@@ -178,7 +178,7 @@ MLO_IMAGE_NAME=MLO
 wget "${UBOOT_IMAGE}" -O "${UBOOT_IMAGE_NAME}" || error_fatal "${UBOOT_IMAGE} not found"
 wget "${MLO_IMAGE}" -O "${MLO_IMAGE_NAME}" || error_fatal "${MLO_IMAGE} not found"
 
-"${EXPECT_SCRIPT}" "${TTY}"
+"${EXPECT_SCRIPT}" ${TTY}
 report_pass "start_fastboot"
 fastboot devices
 fastboot oem format || error_fatal "oem format failed"
