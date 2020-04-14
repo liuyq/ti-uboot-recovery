@@ -16,9 +16,25 @@ send -h "mmc rescan\r"
 sleep 0.1
 expect "=>"
 sleep 0.1
+send -h "mmc erase 0 0x4000\r"
+sleep 0.1
+expect "1024 blocks erased: OK"
+sleep 0.1
+send -h "mmc erase 0 0x40000\r"
+sleep 0.1
+expect "262144 blocks erased: OK"
+sleep 0.1
 send -h "mmc erase 0 0x400000\r"
 sleep 0.1
 expect "4194304 blocks erased: OK"
+sleep 0.1
+send -h "part list mmc 0 \r"
+sleep 0.1
+expect "=>"
+sleep 0.1
+send -h "part list mmc 1 \r"
+sleep 0.1
+expect "=>"
 sleep 0.1
 send -h "env default -f -a\r"
 sleep 0.1
